@@ -14,10 +14,11 @@ Require to run
 1. Include socket.io in html layout
 2. Enable socket.js notify in client (layout file) like bellow (It help to show notification to user when having incoming call)
 
-    socket.on('notify', function (data) {
-        $('#flash').append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>'+data.message+'</strong></div>');
-    });
-
+```javascript
+socket.on('notify', function (data) {
+    $('#flash').append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>'+data.message+'</strong></div>');
+});
+````
 
 Make a call
 ===========
