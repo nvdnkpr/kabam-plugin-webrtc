@@ -1,0 +1,19 @@
+<div ng-controller="userController">	
+	[[^user]]
+        <a href="/home#/login" class="btn">Sign In To Call</a>
+    [[/user]]
+    [[#user]]
+        <a class="btn" ng-click="call('[[username]]')">Call [[username]]</a>
+    [[/user]]
+</div>
+
+<script>
+function userController($scope, $http) {
+	$scope.call = function(username) {		
+		$http.get('/webrtc/call/' + username)
+			.success(function(data){
+				window.open("/webrtc/room/"+data);		
+			});
+	}
+}
+</script>
