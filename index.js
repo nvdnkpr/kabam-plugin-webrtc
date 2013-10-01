@@ -19,12 +19,12 @@ var options = {
 
 var fs = require('fs');
 
-exports.routes = function(mwc){       
-  mwc.app.get('/call/wait', function(request,response) {  
+exports.routes = function(kabam){       
+  kabam.app.get('/call/wait', function(request,response) {  
     response.render('call/wait.html');  
   });
     
-  mwc.app.get(/^\/call\/room\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response){
     var roomId = request.params[0];
     var parameters = {
       roomId: roomId
@@ -32,7 +32,7 @@ exports.routes = function(mwc){
     response.render('call/room.html',parameters);
   });
   
-  mwc.app.get(/^\/call\/user\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response){
     var username = request.params[0];
     var parameters = {
       username: username
@@ -41,17 +41,17 @@ exports.routes = function(mwc){
   });
 
   // create a room when user call to another
-  mwc.app.get(/^\/call\/call\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/call\/(.+)$/, function(request, response){
     var username = request.params[0];
     roomid = Math.round(Math.random() * 9999999999) + 9999999999;
 
     // Notified other user    
-    mwc.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+    kabam.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
 
     response.send(roomid.toString());
   });
 
-  mwc.app.get('/call/record', function(request,response) {   
+  kabam.app.get('/call/record', function(request,response) {   
     parameters = {
       csrf: response.locals.csrf
     }
@@ -59,12 +59,12 @@ exports.routes = function(mwc){
   });  
 
   // Save recording
-  mwc.app.post('/call/save-record', function(request,response) {    
+  kabam.app.post('/call/save-record', function(request,response) {    
     var fileType = request.body.fileType;
     
     // Save file
     fs.readFile(request.files[fileType + '_blob'].path, function (err, data){
-      var recordPath = path.join(__dirname , '../../../../' + mwc.config.public);
+      var recordPath = path.join(__dirname , '../../../../' + kabam.config.public);
       var savePath = recordPath + "/records/" + (new Date()).getTime() + (Math.round(Math.random() * 9999999999) + 9999999999) ;
       if (fileType == 'audio') savePath += '.wav';
       if (fileType == 'video') savePath += '.webm';
