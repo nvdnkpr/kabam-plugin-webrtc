@@ -10,9 +10,9 @@
 <script>
 function userController($scope, $http) {
 	$scope.call = function(username) {		
-		$http.get('/webrtc/call/' + username)
+		$http.get('/call/call/' + username)
 			.success(function(data){
-				window.open("/webrtc/room/"+data);		
+				window.open("/call/room/"+data);		
 			});
 	}
 }

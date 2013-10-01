@@ -67,6 +67,7 @@
 
   var socket = io.connect('');
   var roomId = "[[ roomId ]]";
+  var userId;
   var roomsList = document.getElementById('rooms-list');
   
     
@@ -75,7 +76,7 @@
     $scope.messages = [];
            
     $scope.sendMessage = function() {
-      console.log($scope.chatMessage);
+      //console.log($scope.chatMessage);
       socket.emit('chat:newMessage', {content: $scope.chatMessage});
       $scope.chatMessage = "";
     }
@@ -83,25 +84,33 @@
     $scope.startBroadcasting = function() {
       peer.startBroadcasting();
     }  
-
-    socket.on('chat:message', function(data) {
-      $scope.messages.push(data);      
-    });
-    
+  
     socket.on('chat:newMessage', function(data){
-      console.log(data);
+      //console.log(data);
       $scope.messages.push(data);
       $scope.$apply();
     });
 
+    // partner disconnect
+    socket.on('chat:disconnect', function(data){
+      //console.log(data);
+      if (roomId == data.roomid) {
+        $('#' + data.userid).remove();
+        $scope.messages.push(data);
+        $scope.$apply();
+      }
+    });
+
   }
   
-  // CHAT
+  // CHAT - CALLING
   socket.on('connect', function () {
-    console.log('connect');
+    //console.log('connect');
     socket.emit('chat:joinRoom', roomId);
     
     socket.on('chat:id', function(id){
+      userId = id;
+
       var peer = new PeerConnection({socketEvent: 'chat:video', roomid: roomId, socket: socket, userid: id});
         
       // Video 1-1

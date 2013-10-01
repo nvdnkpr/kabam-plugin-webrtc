@@ -1,3 +1,5 @@
+var path = require('path');
+
 /*
 var os = require('os'),
   async = require('async');
@@ -15,66 +17,116 @@ var options = {
 };  
 */
 
+var fs = require('fs');
+
 exports.routes = function(mwc){       
-  mwc.app.get('/webrtc/wait', function(request,response) {  
-    response.render('webrtc/wait.html');  
+  mwc.app.get('/call/wait', function(request,response) {  
+    response.render('call/wait.html');  
   });
     
-  mwc.app.get(/^\/webrtc\/room\/(.+)$/, function(request, response){
+  mwc.app.get(/^\/call\/room\/(.+)$/, function(request, response){
     var roomId = request.params[0];
     var parameters = {
       roomId: roomId
     };
-    response.render('webrtc/room.html',parameters);
+    response.render('call/room.html',parameters);
   });
   
-  mwc.app.get(/^\/webrtc\/user\/(.+)$/, function(request, response){
+  mwc.app.get(/^\/call\/user\/(.+)$/, function(request, response){
     var username = request.params[0];
     var parameters = {
       username: username
     }
-    response.render('webrtc/user.html',parameters);
+    response.render('call/user.html',parameters);
   });
 
   // create a room when user call to another
-  mwc.app.get(/^\/webrtc\/call\/(.+)$/, function(request, response){
+  mwc.app.get(/^\/call\/call\/(.+)$/, function(request, response){
     var username = request.params[0];
     roomid = Math.round(Math.random() * 9999999999) + 9999999999;
 
     // Notified other user    
-    mwc.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/webrtc/room/' + roomid + '">Click here</a>'});
+    mwc.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
 
     response.send(roomid.toString());
   });
+
+  mwc.app.get('/call/record', function(request,response) {   
+    parameters = {
+      csrf: response.locals.csrf
+    }
+    response.render('call/record.html');
+  });  
+
+  // Save recording
+  mwc.app.post('/call/save-record', function(request,response) {    
+    var fileType = request.body.fileType;
+    
+    // Save file
+    fs.readFile(request.files[fileType + '_blob'].path, function (err, data){
+      var recordPath = path.join(__dirname , '../../../../' + mwc.config.public);
+      var savePath = recordPath + "/records/" + (new Date()).getTime() + (Math.round(Math.random() * 9999999999) + 9999999999) ;
+      if (fileType == 'audio') savePath += '.wav';
+      if (fileType == 'video') savePath += '.webm';
+      
+      fs.writeFile(savePath, data, function(err) {
+        if (err) {
+          //console.log(err)
+          response.send('fail');
+        }else response.send('ok');
+      });
+    });    
+  });   
 };
 
 
 exports.app = function(kernel) {  
-    
-  kernel.io.sockets.on('connection', function(socket){        
-    
-    console.log('socket.id: ' + socket.id);
+
+  kernel.io.sockets.on('connection', function(socket){
+
+    if (!socket.handshake.user) {
+      //console.log('---- NOT AUTHORIZE ----');
+      return;
+    }
+
+    //console.log('socket.id: ' + socket.id);
     socket.emit('chat:id', socket.id);
     
     // handler join room from client
     socket.on('chat:joinRoom', function(room){
       socket.room = room;
       socket.join(room);
-      console.log('he join room');
+
+      //console.log('-------CLIENT OF ------- ' + room);
+      //console.log(kernel.io.sockets.clients(room).length);      
+      //console.log('he join room');
     });
     
     socket.on('disconnect', function(){
-      console.log('--- disconnect --');
+
+      kernel.io.sockets.in(socket.room).emit('chat:disconnect', {
+        userid: socket.id,
+        roomid: socket.room,
+        user: socket.handshake.user.username,
+        content: 'Left the room',
+      });  
+
+      socket.leave(socket.room);      
+
+      // console.log(socket.handshake.user.username + '--- disconnect --');
+      // console.log('-------CLIENT OF ------- ' + socket.room);
+      // console.log(kernel.io.sockets.clients(socket.room).length);
+
     });  
     
     // handler new message from client
     socket.on('chat:newMessage', function(message){
-      console.log(message);
+      //console.log(message);
       kernel.io.sockets.in(socket.room).emit('chat:newMessage', {content: message.content, user: socket.handshake.user.username});
     });
     
     socket.on('chat:video', function(data){
-      console.log('------chat:video---------');
+      //console.log('------chat:video---------');
       //console.log(data);
       kernel.io.sockets.in(socket.room).emit('chat:video', data);
     });

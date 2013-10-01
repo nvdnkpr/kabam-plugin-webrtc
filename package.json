@@ -1,0 +1,38 @@
+{
+  "name": "kabam-plugin-webrtc",
+  "version": "0.0.1",
+  "description": "WebRTC feature for kabam",
+  "main": "index.js",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.3.x"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+  },
+  "keywords": [
+    "webrtc",
+    "audio",
+    "video"    
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": ""
+  },
+  "devDependencies": {
+    "mocha":"*",
+    "grunt": "*",
+    "grunt-cli": "*",
+    "mwc_kernel": "git+https://github.com/mywebclass/mwc_kernel.git",
+    "grunt-contrib-jshint": "*",
+    "grunt-simple-mocha": "*",
+    "should": "*"
+  }
+}
