@@ -19,12 +19,12 @@ var options = {
 
 var fs = require('fs');
 
-exports.routes = function(mwc){       
-  mwc.app.get('/call/wait', function(request,response) {  
-    response.render('call/wait.html');  
+exports.routes = function(kernel){
+  kernel.app.get('/call/wait', function(request,response) {
+    response.render('call/wait.html');
   });
     
-  mwc.app.get(/^\/call\/room\/(.+)$/, function(request, response){
+  kernel.app.get(/^\/call\/room\/(.+)$/, function(request, response){
     var roomId = request.params[0];
     var parameters = {
       roomId: roomId
@@ -32,55 +32,61 @@ exports.routes = function(mwc){
     response.render('call/room.html',parameters);
   });
   
-  mwc.app.get(/^\/call\/user\/(.+)$/, function(request, response){
+  kernel.app.get(/^\/call\/user\/(.+)$/, function(request, response){
     var username = request.params[0];
     var parameters = {
       username: username
-    }
+    };
     response.render('call/user.html',parameters);
   });
 
   // create a room when user call to another
-  mwc.app.get(/^\/call\/call\/(.+)$/, function(request, response){
+  kernel.app.get(/^\/call\/call\/(.+)$/, function(request, response){
     var username = request.params[0];
-    roomid = Math.round(Math.random() * 9999999999) + 9999999999;
+    var roomid = Math.round(Math.random() * 9999999999) + 9999999999;
 
     // Notified other user    
-    mwc.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+    kernel.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
 
     response.send(roomid.toString());
   });
 
-  mwc.app.get('/call/record', function(request,response) {   
-    parameters = {
+  kernel.app.get('/call/record', function(request,response) {
+    var parameters = {
       csrf: response.locals.csrf
-    }
-    response.render('call/record.html');
-  });  
+    };
+    response.render('call/record.html', parameters);
+  });
 
   // Save recording
-  mwc.app.post('/call/save-record', function(request,response) {    
+  kernel.app.post('/call/save-record', function(request,response) {
     var fileType = request.body.fileType;
     
     // Save file
     fs.readFile(request.files[fileType + '_blob'].path, function (err, data){
-      var recordPath = path.join(__dirname , '../../../../' + mwc.config.public);
-      var savePath = recordPath + "/records/" + (new Date()).getTime() + (Math.round(Math.random() * 9999999999) + 9999999999) ;
-      if (fileType == 'audio') savePath += '.wav';
-      if (fileType == 'video') savePath += '.webm';
+      var recordPath = path.join(__dirname , '../../../../' + kernel.config.public);
+      var savePath = recordPath + '/records/' + (new Date()).getTime() + (Math.round(Math.random() * 9999999999) + 9999999999) ;
+      if (fileType === 'audio'){
+        savePath += '.wav';
+      }
+      if (fileType === 'video'){
+        savePath += '.webm';
+      }
       
       fs.writeFile(savePath, data, function(err) {
         if (err) {
           //console.log(err)
           response.send('fail');
-        }else response.send('ok');
+        }else{
+          response.send('ok');
+        }
       });
-    });    
-  });   
+    });
+  });
 };
 
 
-exports.app = function(kernel) {  
+exports.app = function(kernel) {
 
   kernel.io.sockets.on('connection', function(socket){
 
@@ -109,15 +115,15 @@ exports.app = function(kernel) {
         roomid: socket.room,
         user: socket.handshake.user.username,
         content: 'Left the room',
-      });  
+      });
 
-      socket.leave(socket.room);      
+      socket.leave(socket.room);
 
       // console.log(socket.handshake.user.username + '--- disconnect --');
       // console.log('-------CLIENT OF ------- ' + socket.room);
       // console.log(kernel.io.sockets.clients(socket.room).length);
 
-    });  
+    });
     
     // handler new message from client
     socket.on('chat:newMessage', function(message){

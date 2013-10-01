@@ -30,7 +30,7 @@
     "mocha":"*",
     "grunt": "*",
     "grunt-cli": "*",
-    "mwc_kernel": "git+https://github.com/mywebclass/mwc_kernel.git",
+    "kabam-kernel": "git+https://github.com/mykabam/kabam-kernel.git",
     "grunt-contrib-jshint": "*",
     "grunt-simple-mocha": "*",
     "should": "*"
