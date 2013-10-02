@@ -88,6 +88,8 @@ exports.routes = function(kabam){
 
 exports.app = function(kernel) {
 
+  console.log('kernel', kernel);
+
   kernel.io.sockets.on('connection', function(socket){
 
     if (!socket.handshake.user) {
