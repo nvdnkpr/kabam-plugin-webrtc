@@ -115,7 +115,7 @@
                     stream: stream,
                     userid: root.participant,
                     type: 'remote'
-                };
+                };                
 
                 function afterRemoteStreamStartedFlowing() {
                     if (!root.onStreamAdded) return;

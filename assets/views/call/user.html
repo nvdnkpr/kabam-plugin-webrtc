@@ -4,15 +4,94 @@
     [[/user]]
     [[#user]]
         <a class="btn" ng-click="call('[[username]]')">Call [[username]]</a>
+        <!--
+        <a class="btn" ng-click="leaveMessage('[[username]]')">Leave a voice message for [[username]]</a>
+				-->
+        <div ng-show="showRecording">
+		  <div style="clear:both;">
+		    <video id="preview"></video>    
+		  </div>  
+
+		  <button class="btn" id="btn-record" ng-click="record()">Recording</button>
+		  
+	  	<button class="btn" id="btn-stop" ng-click="stopRecord()">Stop Recording</button>
+			
+		</div>
     [[/user]]
 </div>
 
+<script src="/call/RecordRTC.js"></script>
+
 <script>
-function userController($scope, $http) {
+var _csrf = '[[ csrf ]]';
+var homeOwner = '[[username]]';
+var localStream;
+
+var videoPreview = document.getElementById('preview');
+var video_constraints = {
+	mandatory: {},
+	optional: []
+};  
+
+var recordAudio, recordVideo;
+
+function userController($scope, $http){	
+	$scope.showRecording = false;
+
 	$scope.call = function(username) {		
 		$http.get('/call/call/' + username)
 			.success(function(data){
 				window.open("/call/room/"+data);		
+			});
+	}
+
+	$scope.leaveMessage = function(username){
+		$scope.showRecording = true;
+	}
+
+	// Do recording
+	$scope.record = function(){
+		// Get media and record
+		navigator.getUserMedia(
+			{audio: true, video: video_constraints},
+			function (stream){
+				localStream = stream;
+				videoPreview.src = window.URL.createObjectURL(stream); 
+				videoPreview.play();
+
+				recordAudio = RecordRTC(stream, {});
+				recordVideo = RecordRTC(stream, { type: 'video'});
+
+				recordAudio.startRecording();
+				recordVideo.startRecording();
+			},
+			function(error){}
+		);
+	}
+
+	// Stop recording
+	$scope.stopRecord = function(){	    
+	    recordAudio.stopRecording();
+	    recordVideo.stopRecording();
+
+	    $scope.saveRecord(recordAudio.getBlob(), recordVideo.getBlob());
+
+	    videoPreview.src = "";
+
+	    localStream.stop();
+	}
+
+	// Save record to server
+	$scope.saveRecord = function(audioBlob, videoBlob){
+		var formData = new FormData();	
+		formData.append('audio', audioBlob);
+		formData.append('video', videoBlob);		
+		//formData.append('_csrf', _csrf);
+
+		
+		$http({method: 'POST', url: '/api/recordings/' + homeOwner, data: formData, transformRequest: angular.identity, headers: {'Content-Type': undefined}})
+			.success(function (data){
+				console.log(data);
 			});
 	}
 }
