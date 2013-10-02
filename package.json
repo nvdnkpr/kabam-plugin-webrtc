@@ -1,7 +1,7 @@
 {
   "name": "kabam-plugin-webrtc",
   "version": "0.0.1",
-  "description": "WebRTC feature for kabam",
+  "description": "WebRTC feature for Kabam",
   "main": "index.js",
   "engines": {
     "node": "0.10.x",
@@ -14,20 +14,20 @@
     "type": "git",
     "url": ""
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "keywords": [
+    "kabam plugin",
     "webrtc",
     "audio",
-    "video"    
+    "video"
   ],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/mykabam/kabam-plugin-webrtc/issues"
   },
   "devDependencies": {
-    "mocha":"*",
+    "mocha": "*",
     "grunt": "*",
     "grunt-cli": "*",
     "kabam-kernel": "git+https://github.com/mykabam/kabam-kernel.git",

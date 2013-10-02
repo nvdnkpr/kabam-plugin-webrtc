@@ -19,12 +19,12 @@ var options = {
 
 var fs = require('fs');
 
-exports.routes = function(kernel){
-  kernel.app.get('/call/wait', function(request,response) {
-    response.render('call/wait.html');
+exports.routes = function(kabam){       
+  kabam.app.get('/call/wait', function(request,response) {  
+    response.render('call/wait.html');  
   });
     
-  kernel.app.get(/^\/call\/room\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response){
     var roomId = request.params[0];
     var parameters = {
       roomId: roomId
@@ -32,7 +32,7 @@ exports.routes = function(kernel){
     response.render('call/room.html',parameters);
   });
   
-  kernel.app.get(/^\/call\/user\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response){
     var username = request.params[0];
     var parameters = {
       username: username
@@ -41,25 +41,25 @@ exports.routes = function(kernel){
   });
 
   // create a room when user call to another
-  kernel.app.get(/^\/call\/call\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/call\/(.+)$/, function(request, response){
     var username = request.params[0];
     var roomid = Math.round(Math.random() * 9999999999) + 9999999999;
 
     // Notified other user    
-    kernel.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+    kabam.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
 
     response.send(roomid.toString());
   });
 
-  kernel.app.get('/call/record', function(request,response) {
-    var parameters = {
+  kabam.app.get('/call/record', function(request,response) {   
+    parameters = {
       csrf: response.locals.csrf
     };
     response.render('call/record.html', parameters);
   });
 
   // Save recording
-  kernel.app.post('/call/save-record', function(request,response) {
+  kabam.app.post('/call/save-record', function(request,response) {    
     var fileType = request.body.fileType;
     
     // Save file
