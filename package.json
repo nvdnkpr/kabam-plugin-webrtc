@@ -8,7 +8,7 @@
     "npm": "1.3.x"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -33,13 +33,12 @@
     "url": "https://github.com/mykabam/kabam-plugin-webrtc/issues"
   },
   "devDependencies": {
-    "mocha": "*",
-    "grunt": "*",
-    "grunt-cli": "*",
+    "mocha": "~1.13.0",
+    "grunt": "~0.4.1",
     "kabam-kernel": "git+https://github.com/mykabam/kabam-kernel.git",
-    "grunt-contrib-jshint": "*",
-    "grunt-simple-mocha": "*",
-    "should": "*"
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-simple-mocha": "~0.4.0",
+    "should": "~1.3.0"
   },
   "readme": "kabam-plugin-webrtc\n===================\n\nWebRTC feature for kabam\n\nUnder construction\n==================\n\n* This plugin is under construction *\n\nRequire to run\n==============\n\n1. Include socket.io in html layout\n2. Enable socket.js notify in client (layout file) like bellow (It help to show notification to user when having incoming call)\n\n```javascript\nsocket.on('notify', function (data) {\n    $('#flash').append('<div class=\"alert alert-info\"><a class=\"close\" data-dismiss=\"alert\">×</a><strong>'+data.message+'</strong></div>');\n});\n````\n\nMake a call\n===========\n\nStep to make a call from user 1 to user 2\n\n1. Client 1 login to user 1\n2. Client 2 login to user 2\n3. Client 1 go to /webrtc/user/<_username 2_>\n4. Client 2 go to /webrtc/wait (it may be any page have socket.io enabled)\n5. Client 1 click to button \"Call to user 2\". New page will open\n6. Client 2 click to the link of notify\n7. Start video call !\n",
   "readmeFilename": "README.md",
