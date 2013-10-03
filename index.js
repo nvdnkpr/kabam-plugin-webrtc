@@ -312,7 +312,7 @@ exports.app = function(kernel) {
 
   var io = require('socket.io').listen(kernel);
 
-  io.set('origins', ['localhost:8080', '127.0.0.1:8080']);
+  io.set('origins', ['*']);
 
   kernel.io = io;
 
