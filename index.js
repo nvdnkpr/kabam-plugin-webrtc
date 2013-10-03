@@ -310,6 +310,12 @@ exports.routes = function(kabam){
 
 exports.app = function(kernel) {
 
+  var io = require('socket.io').listen(plainHttpServer);
+
+  io.set('origins', ['localhost:8080', '127.0.0.1:8080']);
+
+  kernel.io = io;
+
   kernel.io.sockets.on('connection', function(socket){
 
     if (!socket.handshake.user) {
