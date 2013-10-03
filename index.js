@@ -310,7 +310,7 @@ exports.routes = function(kabam){
 
 exports.app = function(kernel) {
 
-  var io = require('socket.io').listen(plainHttpServer);
+  var io = require('socket.io').listen(kernel);
 
   io.set('origins', ['localhost:8080', '127.0.0.1:8080']);
 
