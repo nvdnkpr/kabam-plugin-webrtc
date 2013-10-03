@@ -1,7 +1,8 @@
-var path = require('path'),
-  GridFSStreamAdapter = require('./lib/GridFSStreamAdapter.js'),
-  Grid = require('gridfs-stream');
+exports.name = 'kabamPluginWebrtc';
 
+var path = require('path'),
+  Grid = require('gridfs-stream'),
+  async = require('async');
 /*
 var os = require('os'),
   async = require('async');
@@ -21,7 +22,29 @@ var options = {
 
 var fs = require('fs');
 
+/* 
+ * Utility functions
+ */
+function checkUserOnline(kabam, username) {
+  var activeUsers = kabam.io.sockets.manager.handshaken,
+    x;
+    
+  for (x in activeUsers) {
+    if (activeUsers[x].user && activeUsers[x].user.username === username) {
+      if (kabam.io.sockets.manager.sockets.sockets[x]) {
+        return true;      
+      }
+    }
+  }
+
+  return false;
+}
+
 exports.routes = function(kabam){
+
+  /*
+   * TEST CALLING
+   */
   kabam.app.get('/call/wait', function(request,response) {
     response.render('call/wait.html', { layout: 'call/layout.html'});
   });
@@ -64,53 +87,228 @@ exports.routes = function(kabam){
     response.render('call/record.html', parameters);
   });
 
+
+  /*
+   * CALLING API
+   */
+
+  kabam.app.get('/api/call/:username', function(request, response){
+    var username = request.params.username;
+
+    // check if user online
+    if ( checkUserOnline(kabam, username)) {
+      var roomid = + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
+
+      // Notified other user    
+      kabam.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+
+      var result = {
+        roomId: roomid
+      }
+      response.json(result);
+    } else {
+      response.json({
+        status: 'ERROR',
+        errorCode: 'USER_NOT_ONLINE',
+        message: username + ' is not online'
+      })
+    }
+  });
+
+  /*
+   * WEBRTC RECORDING MESSAGE API
+   */
+
   // Save recording
   // Post value: {audio, video}
   kabam.app.post('/api/recordings/:username', function(request,response) {
     if(request.user) {
-      // Save audio and video to GridFS
-      var gridFS = new GridFSStreamAdapter(new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo));
+      // Ensure receiver user is exist
+      kabam.model.User.findOne({'username': request.params.username}, function(err, receiver){
+        if (!err) {
+          // Save audio and video to GridFS          
+          var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
 
-      var fileNamePrefix = request.params[0] + '_' + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);  
-      
-      // Save video file
-      var videoName = fileNamePrefix + '_video.webm';
-      var videoTempFile = request.files.video.path;
-      var writeVideoStream = gridFS.createWriteStream({ filename: videoName });
+          // Change the bucket to  `recording`
+          // gridFS.collection('recording');
 
-      // Open video temporary and save it
-      gridFS.createReadStream(videoTempFile)
-        .on('end', function(){
-          // Save audio file
-          var audioName = fileNamePrefix + '_audio.wav';
-          var audioTempFile = request.files.audio.path;
-          var writeAudioStream = gridFS.createWriteStream({ filename: audioName });
+          var fileNamePrefix = receiver._id + '_' + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
+          
+          // Save video file
+          var videoName = fileNamePrefix + '.webm';
+          var videoTempFile = request.files.video.path;
+          var writeVideoStream = gridFS.createWriteStream({
+            filename: videoName,
+            metadata: {
+              type: 'video'
+            }
+          });
 
-          gridFS.createReadStream(audioTempFile)
-            .on('end', function() {
-              // TODO: Send message for user
+          // Open video temporary and save it
+          fs.createReadStream(videoTempFile)
+            .on('end', function(){
               
-              // Return response
-              response.json(201,{'status':201,'description':'Recording is send!'});
+              // Save audio file
+              var audioName = fileNamePrefix + '.wav';
+              var audioTempFile = request.files.audio.path;
+              var writeAudioStream = gridFS.createWriteStream({
+                filename: audioName,
+                metadata: {
+                  type: 'audio',
+                  from: request.user._id,                  
+                  to: receiver._id,                  
+                  video: writeVideoStream.id,                  
+                }
+              });
+
+              fs.createReadStream(audioTempFile)
+                .on('end', function() {
+                  // TODO: Send message for user
+                  
+                  // Return response
+                  response.json(201,{'status':201,'description':'Recording is send!'});
+                })
+                .on('error', function(){
+                  response.json(500, {'status':500,'description':'Cannot save recording.'});
+                })
+                .pipe(writeAudioStream);
+
+                response.json(201,{'status':201,'description':'Recording is send!'});
             })
-            .on('error', function(){
+            .on('error', function(err){             
               response.json(500, {'status':500,'description':'Cannot save recording.'});
             })
-        })
-        .on('error', function(){
-          response.json(500, {'status':500,'description':'Cannot save recording.'});
-        })
-        .pipe(writeVideoStream);      
+            .pipe(writeVideoStream);        
+        }
+      });
     } else {
       response.send(400);
     }
   });
+
+  // Get stream of record file by file name
+  kabam.app.get('/api/recordings/:fileid/stream', function(request, response){
+    var fileid = request.params.fileid;
+
+    var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
+    var readstream = gridFS.createReadStream({_id: fileid});
+
+    readstream
+      .on('error', function(err) {
+        response.send(404);
+      })
+      .pipe(response);
+  });
+
+  //Get list voice mail of user (receiver)
+  //url: /api/recording<?limit=..>&<offset=..>
+  kabam.app.get('/api/recordingMessages', function(request, response){
+    if (request.user) {      
+      var mesgLimit = request.query['limit'] ? request.query['limit'] : 10,
+      mesgOffset = request.query['offset'] ? request.query['offset'] : 0;
+
+      var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
+              
+      gridFS.files.find(
+        {'metadata.to': request.user._id, 'metadata.type': 'audio'},        
+        {
+          skip: mesgOffset,
+          limit: mesgLimit,
+          sort: {'uploadDate': -1}
+        }
+      ).toArray(function(err, recordingMessages){
+        if (err) {
+          response.json(500, {'status':500,'description':'Cannot get recordings.'});
+        } else {
+          
+          // Return result
+          var i = 0,
+            results = [];
+
+          async.whilst(
+            function () { return i < recordingMessages.length; },
+            function (callback) {
+              var recording = recordingMessages[i];            
+              var resultItem = {
+                id: recording._id,
+                from: {
+                  id: recording.metadata.from
+                },
+                to: {
+                  id: request.user.id,
+                  username: request.user.username
+                },
+                time: recording.uploadDate,
+                audio: recording._id,
+                video: recording.metadata.video
+              };
+
+              kabam.model.User.findById(resultItem.from.id, function(err, user) {
+                if (err) {
+                  callback(err);
+                } else {
+                  resultItem.from.username = user.username;
+                  results.push(resultItem);
+                  callback(null);
+                }
+              });
+        
+              i++;
+
+            },
+            function(err) {
+              response.json(results);
+            }
+          );
+
+        }
+      });        
+    } else {
+      response.send(400);
+    }
+  });  
+
+  //Delete recording message of user (receiver)
+  // DELETE: /api/recording/:id
+  kabam.app.delete('/api/recordingMessages/:id', function(request, response){
+  //kabam.app.get('/api/recordingMessages/:id/delete', function(request, response){
+    if (request.user) {
+      var id = request.params.id;0
+      var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
+      gridFS.files.findOne({'_id': gridFS.tryParseObjectId(id)}, function(err, audioFile){
+        if(err || !audioFile) {          
+          response.send(404);
+        } else {
+          if (audioFile.metadata.to.toString() != request.user._id.toString()) {            
+            response.send(400);
+          } else {
+            gridFS.remove({_id: audioFile.metadata.video}, function(err){              
+              if (err) {
+                response.send(501);
+              } else {
+                // Remove audio file
+                gridFS.remove({_id: id}, function(err){
+                  if (err) {
+                    response.send(501);
+                  } else {
+                    response.json({status: 'ok'});
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+
+    } else {
+      response.send(400);
+    }
+  });
+
 };
 
 
 exports.app = function(kernel) {
-
-  console.log('kernel', kernel);
 
   kernel.io.sockets.on('connection', function(socket){
 
