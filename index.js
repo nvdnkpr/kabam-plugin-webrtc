@@ -310,11 +310,11 @@ exports.routes = function(kabam){
 
 exports.app = function(kernel) {
 
-  var io = require('socket.io').listen(kernel);
-
-  io.set('origins', ['*']);
-
-  kernel.io = io;
+  if (!kernel.io) {    
+    var io = require('socket.io').listen(kernel);
+    io.set('origins', ['*']);
+    kernel.io = io;
+  }
 
   kernel.io.sockets.on('connection', function(socket){
 
