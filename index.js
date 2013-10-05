@@ -117,14 +117,15 @@ exports.routes = function(kabam) {
 
       var result = {
         roomId: roomid
-      }
+      };
+
       response.json(result);
     } else {
       response.json({
         status: 'ERROR',
         errorCode: 'USER_NOT_ONLINE',
         message: username + ' is not online'
-      })
+      });
     }
   });
 
@@ -307,10 +308,9 @@ exports.routes = function(kabam) {
   //Delete recording message of user (receiver)
   // DELETE: /api/recording/:id
   kabam.app.delete('/api/recordingMessages/:id', function(request, response) {
-    //kabam.app.get('/api/recordingMessages/:id/delete', function(request, response){
+    
     if (request.user) {
       var id = request.params.id;
-      0
       var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
       gridFS.files.findOne({
         '_id': gridFS.tryParseObjectId(id)
