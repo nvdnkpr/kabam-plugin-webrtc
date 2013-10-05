@@ -8,7 +8,7 @@
     "npm": "1.3.x"
   },
   "scripts": {
-    "test": "./node_modules/.bin/grunt test"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,6 @@
   "devDependencies": {
     "mocha": "~1.13.0",
     "grunt": "~0.4.1",
-    "grunt-cli": "*",
     "kabam-kernel": "git+https://github.com/mykabam/kabam-kernel.git",
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-simple-mocha": "~0.4.0",
