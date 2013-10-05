@@ -25,14 +25,15 @@ var fs = require('fs');
 /* 
  * Utility functions
  */
+
 function checkUserOnline(kabam, username) {
   var activeUsers = kabam.io.sockets.manager.handshaken,
     x;
-    
+
   for (x in activeUsers) {
     if (activeUsers[x].user && activeUsers[x].user.username === username) {
       if (kabam.io.sockets.manager.sockets.sockets[x]) {
-        return true;      
+        return true;
       }
     }
   }
@@ -40,46 +41,53 @@ function checkUserOnline(kabam, username) {
   return false;
 }
 
-exports.routes = function(kabam){
+exports.routes = function(kabam) {
 
   /*
    * TEST CALLING
    */
-  kabam.app.get('/call/wait', function(request,response) {
-    response.render('call/wait.html', { layout: 'call/layout.html'});
+  kabam.app.get('/call/wait', function(request, response) {
+    response.render('call/wait.html', {
+      layout: 'call/layout.html'
+    });
   });
-    
-  kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response){
+
+  kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response) {
     var roomId = request.params[0];
     var parameters = {
       layout: 'call/layout.html',
       roomId: roomId
     };
-    response.render('call/room.html',parameters);
+    response.render('call/room.html', parameters);
   });
-  
-  kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response){
+
+  kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response) {
     var username = request.params[0];
     var parameters = {
       layout: 'call/layout.html',
       username: username,
       csrf: response.locals.csrf
     };
-    response.render('call/user.html',parameters);
+    response.render('call/user.html', parameters);
   });
 
   // create a room when user call to another
-  kabam.app.get(/^\/call\/call\/(.+)$/, function(request, response){
+  kabam.app.get(/^\/call\/call\/(.+)$/, function(request, response) {
     var username = request.params[0];
-    var roomid = + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
+    var roomid = +(new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
 
     // Notified other user    
-    kabam.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+    kabam.emit('notify:sio', {
+      user: {
+        username: username
+      },
+      message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'
+    });
 
     response.send(roomid.toString());
   });
 
-  kabam.app.get('/call/record', function(request,response) {
+  kabam.app.get('/call/record', function(request, response) {
     var parameters = {
       layout: 'call/layout.html',
       csrf: response.locals.csrf
@@ -92,26 +100,32 @@ exports.routes = function(kabam){
    * CALLING API
    */
 
-  kabam.app.get('/api/call/:username', function(request, response){
+  kabam.app.get('/api/call/:username', function(request, response) {
     var username = request.params.username;
 
     // check if user online
-    if ( checkUserOnline(kabam, username)) {
-      var roomid = + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
+    if (checkUserOnline(kabam, username)) {
+      var roomid = +(new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
 
       // Notified other user    
-      kabam.emit('notify:sio', {user: {username: username}, message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'});
+      kabam.emit('notify:sio', {
+        user: {
+          username: username
+        },
+        message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'
+      });
 
       var result = {
         roomId: roomid
-      }
+      };
+
       response.json(result);
     } else {
       response.json({
         status: 'ERROR',
         errorCode: 'USER_NOT_ONLINE',
         message: username + ' is not online'
-      })
+      });
     }
   });
 
@@ -121,10 +135,12 @@ exports.routes = function(kabam){
 
   // Save recording
   // Post value: {audio, video}
-  kabam.app.post('/api/recordings/:username', function(request,response) {
-    if(request.user) {
+  kabam.app.post('/api/recordings/:username', function(request, response) {
+    if (request.user) {
       // Ensure receiver user is exist
-      kabam.model.User.findOne({'username': request.params.username}, function(err, receiver){
+      kabam.model.User.findOne({
+        'username': request.params.username
+      }, function(err, receiver) {
         if (!err) {
           // Save audio and video to GridFS          
           var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
@@ -133,7 +149,7 @@ exports.routes = function(kabam){
           // gridFS.collection('recording');
 
           var fileNamePrefix = receiver._id + '_' + (new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
-          
+
           // Save video file
           var videoName = fileNamePrefix + '.webm';
           var videoTempFile = request.files.video.path;
@@ -146,8 +162,8 @@ exports.routes = function(kabam){
 
           // Open video temporary and save it
           fs.createReadStream(videoTempFile)
-            .on('end', function(){
-              
+            .on('end', function() {
+
               // Save audio file
               var audioName = fileNamePrefix + '.wav';
               var audioTempFile = request.files.audio.path;
@@ -155,30 +171,42 @@ exports.routes = function(kabam){
                 filename: audioName,
                 metadata: {
                   type: 'audio',
-                  from: request.user._id,                  
-                  to: receiver._id,                  
-                  video: writeVideoStream.id,                  
+                  from: request.user._id,
+                  to: receiver._id,
+                  video: writeVideoStream.id,
                 }
               });
 
               fs.createReadStream(audioTempFile)
                 .on('end', function() {
                   // TODO: Send message for user
-                  
+
                   // Return response
-                  response.json(201,{'status':201,'description':'Recording is send!'});
+                  response.json(201, {
+                    'status': 201,
+                    'description': 'Recording is send!'
+                  });
                 })
-                .on('error', function(){
-                  response.json(500, {'status':500,'description':'Cannot save recording.'});
+                .on('error', function() {
+                  response.json(500, {
+                    'status': 500,
+                    'description': 'Cannot save recording.'
+                  });
                 })
                 .pipe(writeAudioStream);
 
-                response.json(201,{'status':201,'description':'Recording is send!'});
+              response.json(201, {
+                'status': 201,
+                'description': 'Recording is send!'
+              });
             })
-            .on('error', function(err){             
-              response.json(500, {'status':500,'description':'Cannot save recording.'});
+            .on('error', function(err) {
+              response.json(500, {
+                'status': 500,
+                'description': 'Cannot save recording.'
+              });
             })
-            .pipe(writeVideoStream);        
+            .pipe(writeVideoStream);
         }
       });
     } else {
@@ -187,11 +215,13 @@ exports.routes = function(kabam){
   });
 
   // Get stream of record file by file name
-  kabam.app.get('/api/recordings/:fileid/stream', function(request, response){
+  kabam.app.get('/api/recordings/:fileid/stream', function(request, response) {
     var fileid = request.params.fileid;
 
     var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
-    var readstream = gridFS.createReadStream({_id: fileid});
+    var readstream = gridFS.createReadStream({
+      _id: fileid
+    });
 
     readstream
       .on('error', function(err) {
@@ -202,33 +232,40 @@ exports.routes = function(kabam){
 
   //Get list voice mail of user (receiver)
   //url: /api/recording<?limit=..>&<offset=..>
-  kabam.app.get('/api/recordingMessages', function(request, response){
-    if (request.user) {      
+  kabam.app.get('/api/recordingMessages', function(request, response) {
+    if (request.user) {
       var mesgLimit = request.query['limit'] ? request.query['limit'] : 10,
-      mesgOffset = request.query['offset'] ? request.query['offset'] : 0;
+        mesgOffset = request.query['offset'] ? request.query['offset'] : 0;
 
       var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
-              
-      gridFS.files.find(
-        {'metadata.to': request.user._id, 'metadata.type': 'audio'},        
-        {
-          skip: mesgOffset,
-          limit: mesgLimit,
-          sort: {'uploadDate': -1}
+
+      gridFS.files.find({
+        'metadata.to': request.user._id,
+        'metadata.type': 'audio'
+      }, {
+        skip: mesgOffset,
+        limit: mesgLimit,
+        sort: {
+          'uploadDate': -1
         }
-      ).toArray(function(err, recordingMessages){
+      }).toArray(function(err, recordingMessages) {
         if (err) {
-          response.json(500, {'status':500,'description':'Cannot get recordings.'});
+          response.json(500, {
+            'status': 500,
+            'description': 'Cannot get recordings.'
+          });
         } else {
-          
+
           // Return result
           var i = 0,
             results = [];
 
           async.whilst(
-            function () { return i < recordingMessages.length; },
-            function (callback) {
-              var recording = recordingMessages[i];            
+            function() {
+              return i < recordingMessages.length;
+            },
+            function(callback) {
+              var recording = recordingMessages[i];
               var resultItem = {
                 id: recording._id,
                 from: {
@@ -252,7 +289,7 @@ exports.routes = function(kabam){
                   callback(null);
                 }
               });
-        
+
               i++;
 
             },
@@ -262,36 +299,44 @@ exports.routes = function(kabam){
           );
 
         }
-      });        
+      });
     } else {
       response.send(400);
     }
-  });  
+  });
 
   //Delete recording message of user (receiver)
   // DELETE: /api/recording/:id
-  kabam.app.delete('/api/recordingMessages/:id', function(request, response){
-  //kabam.app.get('/api/recordingMessages/:id/delete', function(request, response){
+  kabam.app.delete('/api/recordingMessages/:id', function(request, response) {
+    
     if (request.user) {
-      var id = request.params.id;0
+      var id = request.params.id;
       var gridFS = new Grid(kabam.mongoConnection.db, kabam.mongoose.mongo);
-      gridFS.files.findOne({'_id': gridFS.tryParseObjectId(id)}, function(err, audioFile){
-        if(err || !audioFile) {          
+      gridFS.files.findOne({
+        '_id': gridFS.tryParseObjectId(id)
+      }, function(err, audioFile) {
+        if (err || !audioFile) {
           response.send(404);
         } else {
-          if (audioFile.metadata.to.toString() != request.user._id.toString()) {            
+          if (audioFile.metadata.to.toString() !== request.user._id.toString()) {
             response.send(400);
           } else {
-            gridFS.remove({_id: audioFile.metadata.video}, function(err){              
+            gridFS.remove({
+              _id: audioFile.metadata.video
+            }, function(err) {
               if (err) {
                 response.send(501);
               } else {
                 // Remove audio file
-                gridFS.remove({_id: id}, function(err){
+                gridFS.remove({
+                  _id: id
+                }, function(err) {
                   if (err) {
                     response.send(501);
                   } else {
-                    response.json({status: 'ok'});
+                    response.json({
+                      status: 'ok'
+                    });
                   }
                 });
               }
@@ -310,13 +355,13 @@ exports.routes = function(kabam){
 
 exports.app = function(kernel) {
 
-  if (!kernel.io) {    
+  if (!kernel.io) {
     var io = require('socket.io').listen(kernel);
     io.set('origins', ['*']);
     kernel.io = io;
   }
 
-  kernel.io.sockets.on('connection', function(socket){
+  kernel.io.sockets.on('connection', function(socket) {
 
     if (!socket.handshake.user) {
       //console.log('---- NOT AUTHORIZE ----');
@@ -325,9 +370,9 @@ exports.app = function(kernel) {
 
     //console.log('socket.id: ' + socket.id);
     socket.emit('chat:id', socket.id);
-    
+
     // handler join room from client
-    socket.on('chat:joinRoom', function(room){
+    socket.on('chat:joinRoom', function(room) {
       socket.room = room;
       socket.join(room);
 
@@ -335,10 +380,10 @@ exports.app = function(kernel) {
       //console.log(kernel.io.sockets.clients(room).length);      
       //console.log('he join room');
     });
-    
-    socket.on('disconnect', function(){
 
-      kernel.io.sockets.in(socket.room).emit('chat:disconnect', {
+    socket.on('disconnect', function() {
+
+      kernel.io.sockets. in (socket.room).emit('chat:disconnect', {
         userid: socket.id,
         roomid: socket.room,
         user: socket.handshake.user.username,
@@ -352,20 +397,23 @@ exports.app = function(kernel) {
       // console.log(kernel.io.sockets.clients(socket.room).length);
 
     });
-    
+
     // handler new message from client
-    socket.on('chat:newMessage', function(message){
+    socket.on('chat:newMessage', function(message) {
       //console.log(message);
-      kernel.io.sockets.in(socket.room).emit('chat:newMessage', {content: message.content, user: socket.handshake.user.username});
+      kernel.io.sockets. in (socket.room).emit('chat:newMessage', {
+        content: message.content,
+        user: socket.handshake.user.username
+      });
     });
-    
-    socket.on('chat:video', function(data){
+
+    socket.on('chat:video', function(data) {
       //console.log('------chat:video---------');
       //console.log(data);
-      kernel.io.sockets.in(socket.room).emit('chat:video', data);
+      kernel.io.sockets. in (socket.room).emit('chat:video', data);
     });
   });
-  
+
 };
 
 /////// Add XMPP
