@@ -1,5 +1,6 @@
-kabam-plugin-webrtc [![Build Status](https://travis-ci.org/mykabam/kabam-plugin-webrtc.png?branch=fix-ci)](https://travis-ci.org/mykabam/kabam-plugin-webrtc)
-===================
+# kabam-plugin-webrtc
+[![Build Status](https://travis-ci.org/mykabam/kabam-plugin-webrtc.png?branch=fix-ci)](https://travis-ci.org/mykabam/kabam-plugin-webrtc)
+[![Dependency Status](https://gemnasium.com/mykabam/kabam-plugin-webrtc.png)](https://gemnasium.com/mykabam/kabam-plugin-webrtc)
 
 WebRTC feature for kabam
 
