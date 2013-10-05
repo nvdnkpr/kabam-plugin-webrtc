@@ -318,7 +318,7 @@ exports.routes = function(kabam) {
         if (err || !audioFile) {
           response.send(404);
         } else {
-          if (audioFile.metadata.to.toString() != request.user._id.toString()) {
+          if (audioFile.metadata.to.toString() !== request.user._id.toString()) {
             response.send(400);
           } else {
             gridFS.remove({
