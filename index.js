@@ -48,14 +48,14 @@ exports.routes = function(kabam) {
    */
   kabam.app.get('/call/wait', function(request, response) {
     response.render('call/wait.html', {
-      layout: 'call/layout.html'
+      layout: false
     });
   });
 
   kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response) {
     var roomId = request.params[0];
     var parameters = {
-      layout: 'call/layout.html',
+      layout: false,
       roomId: roomId
     };
     response.render('call/room.html', parameters);
@@ -64,7 +64,7 @@ exports.routes = function(kabam) {
   kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response) {
     var username = request.params[0];
     var parameters = {
-      layout: 'call/layout.html',
+      layout: false,
       username: username,
       csrf: response.locals.csrf
     };
@@ -89,7 +89,7 @@ exports.routes = function(kabam) {
 
   kabam.app.get('/call/record', function(request, response) {
     var parameters = {
-      layout: 'call/layout.html',
+      layout: false,
       csrf: response.locals.csrf
     };
     response.render('call/record.html', parameters);
