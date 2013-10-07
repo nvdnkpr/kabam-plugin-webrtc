@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="kabam">
+  <head>
+    <meta charset="utf-8">
+    <title ng-bind="$state.current.name">Kabam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="[[description]]"/>
+    <meta name="keywords" content="[[keywords]]"/>
+    [[#doIndex]]
+    <meta name="robots" content="all"/>
+    [[/doIndex]]
+    [[^doIndex]]
+    <meta name="robots" content="none">
+    [[/doIndex]]
+    [[#css]]bootstrap/less/bootstrap.less[[/css]]
+    [[#css]]font-awesome/css/font-awesome.css[[/css]]
+    [[#css]]select2/select2.css[[/css]]
+    [[#css]]ng-grid/ng-grid.css[[/css]]
+    [[#css]]styles/monimus.css[[/css]]
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- HTML5 element support for IE6-8 -->
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <header id="navbar" role="banner" class="navbar navbar-fixed-top row-fluid">
+      <div class="navbar-inner container-fluid">
+        <div class="row-fluid">
+
+          [[^user]]
+          <a class="brand offset1 span2" href="/" title="Home">
+            <img src="/assets/images/logo.png" alt="Home" />
+          </a>
+          [[/user]]
+          [[#user]]
+          <a class="brand offset1 span2" href="/home" title="Home">
+            <img src="/assets/images/logo.png" alt="Home"/>
+          </a>
+          [[/user]]
+
+          <form class="nav navbar-search">
+            <input type="text" class="search-query" placeholder="What can monimus help you find?">
+          </form>
+
+          <ul class="nav" ng-show="authService.isAuthenticated()" ng-cloak>
+            <li class="dashboard"><a ui-sref="group.list">Dashboard</a></li>
+            <li class="mycourses">
+              <a ui-sref="course">My Courses</a>
+            </li>
+            <li class="myportfolio"><a ui-sref="portfolio">My Portfolio</a></li>
+          </ul>
+
+          <ul class="nav pull-right" ng-show="authService.isAuthenticated()" ng-cloak>
+            <li class="dropdown message">
+              <span class="unread-count">0</span>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">&nbsp;</a>
+              <ul class="dropdown-menu">
+                <li><a href="#">User A: message</a></li>
+                <li><a href="#">User B: message</a></li>
+                <li><a href="#">User C: message</a></li>
+                <li><a href="#">User D: message</a></li>
+              </ul>
+            </li>
+            <li class="dropdown bell">
+              <span class="unread-count">0</span>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">&nbsp;</a>
+              <ul class="dropdown-menu">
+                <li><a href="#">notification 1</a></li>
+                <li><a href="#">notification 2</a></li>
+                <li><a href="#">notification 3</a></li>
+                <li><a href="#">notification 4</a></li>
+              </ul>
+            </li>
+            <li class="dropdown settings">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">&nbsp;</a>
+              <ul class="dropdown-menu">
+                <li><a ui-sref="profile">{{ authService.user.username }}</a></li>
+                <li><a href="#" ng-click="authService.logOut()">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <noscript>
+      <h1>Error!</h1>
+      <p>Enable javascript execution for this site!</p>
+    </noscript>
+
+    <div class="container-fluid">
+      <div ui-view class="span12"></div>
+      <div id="flash"></div>
+      [[& yield]]
+    </div>
+
+    <div class="container-fluid">
+      <footer class="row">
+        <hr>
+        <span>&copy; 2013 - <a href="https://github.com/mykabam">Monimus</a></span>
+        |
+        <span><a href="#">Terms of Service</a> - <a href="#">Privacy Policy</a></span>
+        <span class="pull-right">
+          <a href="#">Status</a> -
+          <a href="#">Training</a> -
+          <a href="#">API</a> -
+          <a href="#">Blog</a> -
+          <a href="#">About</a>
+        </span>
+      </footer>
+    </div>
+
+    <script type="text/javascript">
+     window.CONFIG = {
+       signUpURL: '/auth/signup',
+       loginURL: '/auth/login',
+       logoutURL: '/auth/logout',
+       recoveryURL: '/auth/restoreAccount',
+       profileEditURL: '/auth/myProfile'
+     };
+     window.USER = [[#user]][[& user ]][[/user]][[^user]]{}[[/user]];
+
+     [[#flash]]
+     window.FLASH = {};
+     [[#error]]
+     window.FLASH.ERROR = "[[error]]";
+     [[/error]]
+     [[#success]]
+     window.FLASH.SUCCESS = "[[success]]";
+     [[/success]]
+     [[#info]]
+     window.FLASH.INFO = "[[info]]";
+     [[/info]]
+     [[/flash]]
+
+     // Notification 
+      if (typeof io !== 'undefined') {
+          var socket = io.connect();
+          socket.on('broadcast', function (data) {
+              $('#clock').html(data.time);
+          });
+          socket.on('notify', function (data) {
+              $('#flash').append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>'+data.message+'</strong></div>');
+          });
+      }     
+    </script>
+
+    [[#js]]loader.js[[/js]]
+  </body>
+</html>

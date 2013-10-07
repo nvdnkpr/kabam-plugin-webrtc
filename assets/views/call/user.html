@@ -1,23 +1,38 @@
-<div ng-controller="userController">
-  [[^user]]
-  <a href="/home#/login" class="btn">Sign In To Call</a>
-  [[/user]] [[#user]]
-  <a class="btn" ng-click="call('[[username]]')">Call [[username]]</a>
+<html ng-app>
 
-  <a class="btn" ng-click="leaveMessage('[[username]]')">Leave a voice message for [[username]]</a>
+<head>
+  <title>Calling RTC</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/call/notification.js"></script>
+</head>
 
-  <div ng-show="showRecording">
-    <div style="clear:both;">
-      <video id="preview"></video>
+<body>
+  <div id="flash"></div>
+  <div ng-controller="userController">
+    [[^user]]
+    <a href="/home#/login" class="btn">Sign In To Call</a>
+    [[/user]] [[#user]]
+    <button class="btn" ng-click="call('[[username]]')">Call [[username]]</button>
+
+    <button class="btn" ng-click="leaveMessage('[[username]]')">Leave a voice message for [[username]]</button>
+
+    <div ng-show="showRecording">
+      <div style="clear:both;">
+        <video id="preview"></video>
+      </div>
+
+      <button class="btn" id="btn-record" ng-click="record()">Recording</button>
+
+      <button class="btn" id="btn-stop" ng-click="stopRecord()">Stop Recording</button>
+
     </div>
-
-    <button class="btn" id="btn-record" ng-click="record()">Recording</button>
-
-    <button class="btn" id="btn-stop" ng-click="stopRecord()">Stop Recording</button>
-
+    [[/user]]
   </div>
-  [[/user]]
-</div>
+</body>
+
+</html>
 
 <script src="/assets/call/RecordRTC.js"></script>
 
