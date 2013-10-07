@@ -8,7 +8,7 @@
 
   // ANGULAR CONTROLLER
 
-  function roomController($scope, $http) {
+  function RoomController($scope, $http) {
     $scope.messages = [];
 
     $scope.sendMessage = function() {
