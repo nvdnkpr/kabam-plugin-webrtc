@@ -95,6 +95,13 @@ exports.routes = function(kabam) {
     response.render('call/record.html', parameters);
   });
 
+  // Example url of show recording message list
+  kabam.app.get('/call/recordingMessages', function(request, response){
+    var parameters = {
+      layout: false,      
+    };
+    response.render('call/recording-message-example.html', parameters);
+  });
 
   /*
    * CALLING API
@@ -367,9 +374,8 @@ exports.app = function(kernel) {
       //console.log('---- NOT AUTHORIZE ----');
       return;
     }
-
-    //console.log('socket.id: ' + socket.id);
-    socket.emit('chat:id', socket.id);
+    
+    socket.emit('chat:id', socket.handshake.user._id);
 
     // handler join room from client
     socket.on('chat:joinRoom', function(room) {

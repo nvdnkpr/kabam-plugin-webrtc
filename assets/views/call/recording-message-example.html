@@ -1,0 +1,57 @@
+<html ng-app="kabam">
+
+<head>
+  <title>Calling RTC</title>
+  <link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"></link>
+
+</head>
+
+<body>
+  <div id="flash"></div>
+  <div ng-controller="RecordingMessageCtrl">
+    
+    <h2>Your voice mails</h2>
+
+    <table cellpadding="0">
+      <thead>
+        <th>Time</th>
+        <th>Sender</th>
+        <th>Tools</th>
+      </thead>
+      <tbody>
+        <tr ng-repeat="message in voiceMessages">
+          <td>{{message.time}}</td>
+          <td><a href="/call/user/{{message.from.username}}">{{message.from.username}}</a></td>
+          <td>
+            <button ng-click="playMail(message)">Play mail</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <script type="text/ng-template" id="playMailContent.html">
+    <div class="modal-header">
+      <h3>Play voice mail</h3>
+    </div>
+    <div class="modal-body">
+      <audio id="audio-content" controls src="/api/recordings/{{message.audio}}/stream">
+      </audio>
+      <video id="video-content" controls src="/api/recordings/{{message.video}}/stream"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-click="viewVoiceMailDone()">OK</button>
+    </div>
+  </script>  
+
+</body>
+
+</html>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://cdn.popcornjs.org/code/dist/popcorn.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="/assets/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="/assets/call/notification.js"></script>  
+<script src="/assets/call/controllers/recordingMessage.js"></script>
