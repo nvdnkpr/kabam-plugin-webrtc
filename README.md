@@ -69,3 +69,9 @@ Recording Message API
 4. Delete a recording message of user (receiver)
 
   DELETE: /api/recordingMessage/{id}
+
+
+Example show list of recording message
+=======================================
+
+Login and go to link /call/recordingMessages to see list of recording message
