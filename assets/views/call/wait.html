@@ -1,7 +1,22 @@
-<div class="span12">
-  [[^user]]
-  <a href="/home#/login" class="btn">Sign In To Receive a Call</a>
-  [[/user]] [[#user]]
-  <p>Wait for other calling...</p>
-  [[/user]]
-</div>
+<html ng-app>
+
+<head>
+  <title>Calling RTC</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/call/notification.js"></script>
+</head>
+
+<body>
+  <div id="flash"></div>
+  <div class="span12">
+    [[^user]]
+    <a href="/home#/login" class="btn">Sign In To Receive a Call</a>
+    [[/user]] [[#user]]
+    <p>Wait for other calling...</p>
+    [[/user]]
+  </div>
+</body>
+
+</html>

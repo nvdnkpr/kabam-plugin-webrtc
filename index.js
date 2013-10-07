@@ -356,9 +356,9 @@ exports.routes = function(kabam) {
 exports.app = function(kernel) {
 
   if (!kernel.io) {
-    var io = require('socket.io').listen(kernel);
-    io.set('origins', ['*']);
-    kernel.io = io;
+    console.log('*** WEBRTC ***');
+    console.log('WE MUST ENABLE SOCKET.IO, PLEASE SET THE CONFIG.IO TO TRUE');
+    return;
   }
 
   kernel.io.sockets.on('connection', function(socket) {
