@@ -4,34 +4,36 @@
 <head>
   <title>Calling RTC</title>
 
-  [[#css]]call/css/call.css[[/css]]
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">[[#css]]call/css/call.css[[/css]]
 </head>
 
 <body>
-  <div class="span12" ng-controller='RoomController'>
-    <div id="call-container">
-      <div id="start-broadcasting"></div>
+  <div class="container-fluid">
+    <div class="row" ng-controller='RoomController'>
+      <div class="span8" id="call-container">
+        <div id="start-broadcasting"></div>
 
-      <div id="remote-video-container"></div>
+        <div id="remote-video-container">
+          <h3>Remote</h3>
+        </div>
+      </div>
 
-      <table id="rooms-list"></table>
+      <div class="span4" id="chat-tools">
+        <div id="local-video-container">
+          <h3>Me</h3>
+        </div>
 
-      <div id="left-bar">
+        <div id="chat">
+          <h3>Message</h3>
+          <ul id="chat-content">
+            <li ng-repeat="message in messages">
+              <strong>{{message.user}}</strong>: {{message.content}}
+            </li>
+          </ul>
 
-        <div id="local-video-container"></div>
-
-        <div id="chat-tools">
-          <div id="chat">
-            <ul id="chat-content">
-              <li ng-repeat="message in messages">
-                {{message.user}}: {{message.content}}
-              </li>
-            </ul>
-          </div>
-
-          <input type="text" ng-model="chatMessage"></input>
-          <br/>
-          <button class="btn" ng-click="sendMessage()">Send message</button>
+          <form ng-submit="sendMessage()">
+            <input type="text" ng-model="chatMessage" placeholder="Send message"></input>
+          </form>
         </div>
       </div>
     </div>
