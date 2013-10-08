@@ -2,39 +2,13 @@
 
 <head>
   <title>Calling RTC</title>
+
+  <link rel="stylesheet" type="text/css" href="/assets/styles/call.js">
   
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/assets/call/notification.js"></script>
-
-  <style type="text/css">
-  #call-container {
-    margin-top: 20px;
-  }
-  #remote-video-container {
-    width: 400px;
-    height: 300px;
-    float: left;
-    -webkit-transition: 1s;
-  }
-  #left-bar {
-    margin-left: 20px;
-    width: 220px;
-    height: 380px;
-    float: left;
-    position: relative;
-  }
-  #chat-tools {
-    position: absolute;
-    height: 200px;
-    bottom: 0px;
-  }
-  #chat-content {
-    height: 150px;
-    overflow-y: auto;
-  }
-  </style>
 </head>
 
 <body>

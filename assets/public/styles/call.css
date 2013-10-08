@@ -1,0 +1,25 @@
+#call-container {
+  margin-top: 20px;
+}
+#remote-video-container {
+  width: 400px;
+  height: 300px;
+  float: left;
+  -webkit-transition: 1s;
+}
+#left-bar {
+  margin-left: 20px;
+  width: 220px;
+  height: 380px;
+  float: left;
+  position: relative;
+}
+#chat-tools {
+  position: absolute;
+  height: 200px;
+  bottom: 0px;
+}
+#chat-content {
+  height: 150px;
+  overflow-y: auto;
+}
