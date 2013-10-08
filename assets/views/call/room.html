@@ -4,11 +4,6 @@
   <title>Calling RTC</title>
 
   [[#css]]call/css/call.css[[/css]]
-  
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/assets/call/notification.js"></script>
 </head>
 
 <body>
@@ -40,12 +35,17 @@
       </div>
     </div>
   </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/call/notification.js"></script>
+  <script src="/assets/call/PeerConnection.js"></script>
+  <script src="/assets/call/controllers/room.js"></script>
+
+  <script>
+  var roomId = "[[ roomId ]]";
+  </script>
 </body>
+
 </html>
-
-<script src="/assets/call/PeerConnection.js"></script>
-<script src="/assets/call/controllers/room.js"></script>
-
-<script>
-var roomId = "[[ roomId ]]";
-</script>
