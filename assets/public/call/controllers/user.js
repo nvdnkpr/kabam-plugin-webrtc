@@ -16,7 +16,7 @@ function UserCtrl($scope, $http) {
   $scope.call = function(username) {
     $http.get('/call/call/' + username)
       .success(function(data) {
-        window.open("/call/room/" + data);
+        window.open("/call/room/" + data, '_self');
       });
   }
 

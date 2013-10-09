@@ -64,7 +64,7 @@ exports.routes = function(kabam) {
       user: {
         username: username
       },
-      message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'
+      message: 'You have a call <a target="_self" href="/call/room/' + roomid + '">Click here</a>'
     });
 
     response.send(roomid.toString());
@@ -102,7 +102,7 @@ exports.routes = function(kabam) {
         user: {
           username: username
         },
-        message: 'You have a call <a target="blank" href="/call/room/' + roomid + '">Click here</a>'
+        message: 'You have a call <a target="_self" href="/call/room/' + roomid + '">Click here</a>'
       });
 
       var result = {
