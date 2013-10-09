@@ -26,13 +26,13 @@
         <div id="chat">
           <h3>Message</h3>
           <ul id="chat-content">
-            <li ng-repeat="message in messages">
+            <li ng-repeat="message in room.messages">
               <strong>{{message.user}}</strong>: {{message.content}}
             </li>
           </ul>
 
-          <form ng-submit="sendMessage()">
-            <input type="text" ng-model="chatMessage" placeholder="Send message"></input>
+          <form ng-submit="room.sendMessage()">
+            <input type="text" ng-model="room.chatMessage" placeholder="Send message"></input>
           </form>
         </div>
       </div>
