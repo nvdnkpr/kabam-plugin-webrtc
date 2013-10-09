@@ -9,14 +9,14 @@
 
     $scope.room = {
       messages: [],
-      chatMessage: ''
+      newMessage: ''
     };
 
     $scope.sendMessage = function() {
       socket.emit('chat:newMessage', {
-        content: $scope.room.chatMessage
+        content: $scope.room.newMessage
       });
-      $scope.room.chatMessage = '';
+      $scope.room.newMessage = '';
     }
 
     $scope.startBroadcasting = function() {
