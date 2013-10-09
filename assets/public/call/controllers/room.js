@@ -6,13 +6,17 @@
   var roomsList = document.getElementById('rooms-list');
 
   function RoomController($scope, $http) {
-    $scope.room.messages = [];
 
-    $scope.room.sendMessage = function() {
+    $scope.room = {
+      messages: [],
+      chatMessage: ''
+    };
+
+    $scope.sendMessage = function() {
       socket.emit('chat:newMessage', {
         content: $scope.room.chatMessage
       });
-      $scope.room.chatMessage = "";
+      $scope.room.chatMessage = '';
     }
 
     $scope.startBroadcasting = function() {
