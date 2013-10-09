@@ -1,24 +1,7 @@
 exports.name = 'kabamPluginWebrtc';
 
-var path = require('path'),
-  Grid = require('gridfs-stream'),
+var Grid = require('gridfs-stream'),
   async = require('async');
-/*
-var os = require('os'),
-  async = require('async');
-
-var junction = require('junction')
-  , Message = junction.elements.Message
-  , argv = require('optimist').argv;
-  
-var j = junction.create();
-
-var options = {
-  type: 'client',
-  jid: 't01@192.168.2.110',
-  password: '',
-};  
-*/
 
 var fs = require('fs');
 
@@ -421,44 +404,3 @@ exports.app = function(kernel) {
   });
 
 };
-
-/////// Add XMPP
-/*
-exports.app = function(kernel) {
-
-    // Junction handler
-    j.use(junction.presence(function(handler) {
-      handler.on('available', function(stanza) {
-        console.log(stanza.from + ' is available');
-      });
-      handler.on('unavailable', function(stanza) {
-        console.log(stanza.from + ' is unavailable');
-      });
-    }));
-    
-    j.use(junction.messageParser());
-    j.use(junction.message(function(handler) {  
-      handler.on('chat', function(stanza) {
-        
-        console.log('------------ffs---------------');    
-        //console.log(stanza.children[0]);    
-        var msg = new Message(stanza.from, '', 'chat'); 
-        msg.c('body', {}).t('tk');
-        stanza.connection.send(msg);
-        //console.log(stanza.connection);
-        console.log(msg.children[0]);
-        
-      });  
-    }));
-    
-    j.use(junction.serviceUnavailable());
-    j.use(junction.errorHandler());
-    
-    j.connect(options).on('online', function() {
-      console.log('Connected as: ' + this.jid);
-      this.send(new junction.elements.Presence());
-    });
-
-};
-
-*/
