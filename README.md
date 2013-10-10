@@ -4,9 +4,9 @@
 
 WebRTC feature for kabam
 
-## Under construction
+## Notice
 
-* This plugin is under construction *
+We are working hard to make things works great for you, if you find anything wrong or something that we should fix, [let us know](https://github.com/mykabam/kabam-plugin-webrtc/issues), or help us to fix it by [sending a pull request](https://github.com/mykabam/kabam-plugin-webrtc/pulls).
 
 ## Require to run
 
