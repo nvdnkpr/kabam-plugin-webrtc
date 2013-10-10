@@ -4,13 +4,11 @@
 
 WebRTC feature for kabam
 
-Under construction
-==================
+## Under construction
 
 * This plugin is under construction *
 
-Require to run
-==============
+## Require to run
 
 1. Include socket.io in html layout
 2. Enable socket.js notify in client (layout file) like bellow (It help to show notification to user when having incoming call)
@@ -21,8 +19,7 @@ socket.on('notify', function (data) {
 });
 ````
 
-Make a call
-===========
+## Make a call
 
 Step to make a call from user 1 to user 2
 
@@ -34,8 +31,9 @@ Step to make a call from user 1 to user 2
 6. Client 2 click to the link of notify
 7. Start video call !
 
-Calling API
-===========
+## APIs Documentation
+
+### Calling API
 
 1. Call a user
 
@@ -46,8 +44,7 @@ Calling API
   (go to /call/room/{roomId} to start a calling)
 
 
-Recording Message API
-=====================
+### Recording Message API
 
 1. Send a recording message
 
@@ -71,7 +68,6 @@ Recording Message API
   DELETE: /api/recordingMessage/{id}
 
 
-Example show list of recording message
-=======================================
+## Example show list of recording message
 
 Login and go to link /call/recordingMessages to see list of recording message
