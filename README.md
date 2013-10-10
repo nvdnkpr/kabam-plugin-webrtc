@@ -14,8 +14,9 @@ We are working hard to make things works great for you, if you find anything wro
 2. Enable socket.js notify in client (layout file) like bellow (It help to show notification to user when having incoming call)
 
 ```javascript
-socket.on('notify', function (data) {
-    $('#flash').append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>'+data.message+'</strong></div>');
+socket.on('notify', function(data) {
+  $('#flash')
+  .append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>' + data.message + '</strong></div>');
 });
 ````
 
