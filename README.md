@@ -71,3 +71,7 @@ Step to make a call from user 1 to user 2
 ## Example show list of recording message
 
 Login and go to link /call/recordingMessages to see list of recording message
+
+## Contribution Guidelines
+
+TBD
