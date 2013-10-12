@@ -1,6 +1,6 @@
 {
   "name": "kabam-plugin-webrtc",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "WebRTC feature for Kabam",
   "main": "index.js",
   "engines": {

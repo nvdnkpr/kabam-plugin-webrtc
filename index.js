@@ -30,7 +30,7 @@ exports.routes = function(kabam) {
    * TEST CALLING
    */
   kabam.app.get('/call/wait', function(request, response) {
-    response.render('call/wait.html', {
+    response.render('webrtc/call/wait.html', {
       layout: false
     });
   });
@@ -41,7 +41,7 @@ exports.routes = function(kabam) {
       layout: false,
       roomId: roomId
     };
-    response.render('call/room.html', parameters);
+    response.render('webrtc/call/room.html', parameters);
   });
 
   kabam.app.get(/^\/call\/user\/(.+)$/, function(request, response) {
@@ -51,7 +51,7 @@ exports.routes = function(kabam) {
       username: username,
       csrf: response.locals.csrf
     };
-    response.render('call/user.html', parameters);
+    response.render('webrtc/call/user.html', parameters);
   });
 
   // create a room when user call to another
@@ -75,7 +75,7 @@ exports.routes = function(kabam) {
       layout: false,
       csrf: response.locals.csrf
     };
-    response.render('call/record.html', parameters);
+    response.render('webrtc/call/record.html', parameters);
   });
 
   // Example url of show recording message list
@@ -83,7 +83,7 @@ exports.routes = function(kabam) {
     var parameters = {
       layout: false,      
     };
-    response.render('call/recording-message-example.html', parameters);
+    response.render('webrtc/call/recording-message-example.html', parameters);
   });
 
   /*
