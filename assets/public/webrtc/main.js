@@ -1,1 +1,1 @@
-//= require ./call/notification.js
+//= require ./lib/notification.js
