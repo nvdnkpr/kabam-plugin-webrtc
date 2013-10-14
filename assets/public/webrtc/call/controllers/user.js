@@ -10,8 +10,19 @@ var video_constraints = {
 
 var recordAudio, recordVideo;
 
-function UserCtrl($scope, $http) {
+var webRtcModule = angular.module('webRtc', []);
+
+webRtcModule.controller('UserCtrl', function UserCtrl($scope, $http) {
+
   $scope.showRecording = false;
+  $scope.data = {
+    selected: '',
+    // TODO replace me with the real user contacts
+    onlineContacts: [
+      'caller1',
+      'caller2'
+    ]
+  };
 
   $scope.call = function(username) {
     $http.get('/call/call/' + username)
@@ -81,4 +92,4 @@ function UserCtrl($scope, $http) {
         console.log(data);
       });
   }
-}
+});
