@@ -10,9 +10,7 @@ var video_constraints = {
 
 var recordAudio, recordVideo;
 
-var webRtcModule = angular.module('webRtc', []);
-
-webRtcModule.controller('UserCtrl', function UserCtrl($scope, $http) {
+function UserCtrl($scope, $http) {
 
   $scope.showRecording = false;
   $scope.data = {
@@ -92,4 +90,4 @@ webRtcModule.controller('UserCtrl', function UserCtrl($scope, $http) {
         console.log(data);
       });
   }
-});
+}
