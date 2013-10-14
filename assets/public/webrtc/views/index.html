@@ -1,0 +1,9 @@
+<h2 class="row-fluid span12">Call</h2>
+
+<div class="row-fluid" ng-controller="UserCtrl">
+  <div class="span3">
+    <form ng-submit="call(data.selected)">
+      <input type="text" ng-model="data.selected" placeholder="Type to call someone..." typeahead="contact for contact in data.onlineContacts | filter:$viewValue | limitTo:8">
+    </form>
+  </div>
+</div>
