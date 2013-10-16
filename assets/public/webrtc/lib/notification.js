@@ -4,6 +4,10 @@ if (typeof io !== 'undefined') {
     $('#clock').html(data.time);
   });
   socket.on('notify', function(data) {
-    $('#flash').append('<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><strong>' + data.message + '</strong></div>');
+    $.pnotify.defaults.history = false;
+    $.pnotify({
+      title: 'Incoming calls',
+      text: '<p> <a class="btn btn-success" target="_self" href="/call/room/' + data.message + '">Accept</a> <a href="#" class="btn btn-danger">Reject</a></p>'
+    });
   });
 }
