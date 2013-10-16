@@ -54,7 +54,7 @@ exports.routes = function(kabam) {
     response.render('webrtc/call/user.html', parameters);
   });
 
-  // create a room when user call to another
+  // generate a room ID
   kabam.app.get(/^\/call\/call\/(.+)$/, function(request, response) {
     var username = request.params[0];
     var roomid = +(new Date()).getTime() + '' + (Math.round(Math.random() * 9999999999) + 9999999999);
@@ -64,7 +64,7 @@ exports.routes = function(kabam) {
       user: {
         username: username
       },
-      message: 'You have a call <a target="_self" href="/call/room/' + roomid + '">Click here</a>'
+      message: roomid
     });
 
     response.send(roomid.toString());
