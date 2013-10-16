@@ -26,15 +26,6 @@ function checkUserOnline(kabam, username) {
 
 exports.routes = function(kabam) {
 
-  /*
-   * TEST CALLING
-   */
-  kabam.app.get('/call/wait', function(request, response) {
-    response.render('webrtc/call/wait.html', {
-      layout: false
-    });
-  });
-
   kabam.app.get(/^\/call\/room\/(.+)$/, function(request, response) {
     var roomId = request.params[0];
     var parameters = {
